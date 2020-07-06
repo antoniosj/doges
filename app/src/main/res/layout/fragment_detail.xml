@@ -18,7 +18,7 @@
             android:minHeight="200dp"/>
 
         <TextView
-            android:id="@+id/tv_nameDetail"
+            android:id="@+id/tv_dogNameDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/iv_dogDetail"
@@ -31,7 +31,7 @@
             android:id="@+id/tv_dogPurposeDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_nameDetail"
+            android:layout_below="@+id/tv_dogNameDetail"
             android:text="Dog purpose"
             style="@style/Text"
             android:layout_centerHorizontal="true"
