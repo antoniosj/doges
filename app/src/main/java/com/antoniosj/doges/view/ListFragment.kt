@@ -38,6 +38,13 @@ class ListFragment : Fragment() {
             adapter = dogsListAdapter
         }
 
+        swipeLayout.setOnRefreshListener {
+            rv_dogList.visibility = View.GONE
+            tv_listError.visibility = View.GONE
+            pb_loadingView.visibility = View.VISIBLE
+            viewModel.refresh()
+            swipeLayout.isRefreshing = false
+        }
         observeViewModel()
     }
 
