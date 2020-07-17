@@ -21,7 +21,7 @@ class ListViewModel: ViewModel() {
         fetchFromRemote()
     }
 
-    fun fetchFromRemote() {
+    private fun fetchFromRemote() {
         loading.value = true
         disposable.add(
             dogsService.getDogs()

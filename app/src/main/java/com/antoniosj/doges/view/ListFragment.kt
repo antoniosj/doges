@@ -48,7 +48,7 @@ class ListFragment : Fragment() {
         observeViewModel()
     }
 
-    fun observeViewModel() {
+    private fun observeViewModel() {
         viewModel.dogs.observe(viewLifecycleOwner, Observer { dogs ->
             dogs?.let {
                 rv_dogList.visibility = View.VISIBLE
