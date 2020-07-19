@@ -2,6 +2,8 @@ package com.antoniosj.doges.util
 
 import android.content.Context
 import android.widget.ImageView
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.antoniosj.doges.R
 import com.bumptech.glide.Glide
@@ -23,3 +25,8 @@ fun ImageView.loadImage(uri: String?, progressDrawable: CircularProgressDrawable
 
     Glide.with(context).setDefaultRequestOptions(options).load(uri).into(this)
 }
+
+inline fun <VM : ViewModel> viewModelFactory(crossinline f: () -> VM): ViewModelProvider.Factory  =
+    object : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(aClass: Class<T>):T = f() as T
+    }

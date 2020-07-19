@@ -13,12 +13,15 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.antoniosj.doges.R
+import com.antoniosj.doges.util.viewModelFactory
 import com.antoniosj.doges.viewmodel.ListViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
 
 class ListFragment : Fragment() {
 
-    private val viewModel: ListViewModel by viewModels()
+    private val viewModel: ListViewModel by viewModels {
+        viewModelFactory { ListViewModel(requireActivity().application) }
+    }
     private val dogsListAdapter = DogListAdapter(arrayListOf())
 
     override fun onCreateView(
@@ -31,6 +34,7 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // quando for criada, pega do db/remote
         viewModel.refresh()
 
         rv_dogList.apply {
@@ -42,7 +46,8 @@ class ListFragment : Fragment() {
             rv_dogList.visibility = View.GONE
             tv_listError.visibility = View.GONE
             pb_loadingView.visibility = View.VISIBLE
-            viewModel.refresh()
+            // se der refresh, pega do remote
+            viewModel.refreshBypassCache()
             swipeLayout.isRefreshing = false
         }
         observeViewModel()

@@ -11,7 +11,7 @@ import com.antoniosj.doges.util.getProgressDrawable
 import com.antoniosj.doges.util.loadImage
 import kotlinx.android.synthetic.main.item_dog.view.*
 
-class DogListAdapter(val dogList: ArrayList<DogBreed>): RecyclerView.Adapter<DogListAdapter.DogViewHolder>() {
+class DogListAdapter(private val dogList: ArrayList<DogBreed>): RecyclerView.Adapter<DogListAdapter.DogViewHolder>() {
 
     fun updateDogList(newDogList: List<DogBreed>) {
         dogList.clear()
@@ -35,7 +35,9 @@ class DogListAdapter(val dogList: ArrayList<DogBreed>): RecyclerView.Adapter<Dog
         // using extension to load with glide*
         holder.view.iv_dog.loadImage(dogList[position].imageUrl, getProgressDrawable(holder.view.iv_dog.context))
         holder.view.setOnClickListener {
-            Navigation.findNavController(it).navigate(ListFragmentDirections.actionToDetailFragment())
+            val action = ListFragmentDirections.actionToDetailFragment()
+            action.dogUuid = dogList[position].uuid
+            Navigation.findNavController(it).navigate(action)
         }
     }
 
