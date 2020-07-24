@@ -2,6 +2,7 @@ package com.antoniosj.doges.util
 
 import android.content.Context
 import android.widget.ImageView
+import androidx.databinding.BindingAdapter
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
@@ -24,6 +25,12 @@ fun ImageView.loadImage(uri: String?, progressDrawable: CircularProgressDrawable
         .error(R.mipmap.ic_dog_icon)
 
     Glide.with(context).setDefaultRequestOptions(options).load(uri).into(this)
+}
+
+//
+@BindingAdapter("android:imageUrl")
+fun loadImage(view: ImageView, url: String?) {
+    view.loadImage(url, getProgressDrawable(view.context))
 }
 
 inline fun <VM : ViewModel> viewModelFactory(crossinline f: () -> VM): ViewModelProvider.Factory  =
