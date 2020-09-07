@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.antoniosj.doges.model.DogBreed
 import com.antoniosj.doges.model.DogDatabase
 import com.antoniosj.doges.model.DogsApiService
+import com.antoniosj.doges.util.NotificationsHelper
 import com.antoniosj.doges.util.SharedPreferencesHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -54,11 +55,13 @@ class ListViewModel(private val app: Application): ViewModel() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object: DisposableSingleObserver<List<DogBreed>>(){
+
                     override fun onSuccess(dogList: List<DogBreed>) {
                         viewModelScope.launch {
                             storeDogsLocally(dogList)
                             Toast.makeText(app, "Dogs retrieve from remote",
                                 Toast.LENGTH_SHORT).show()
+                            NotificationsHelper(app).createNotification()
                         }
 
                     }
