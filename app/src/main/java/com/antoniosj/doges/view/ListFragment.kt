@@ -1,10 +1,9 @@
 package com.antoniosj.doges.view
 
+
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -23,7 +22,6 @@ class ListFragment : Fragment() {
         viewModelFactory { ListViewModel(requireActivity().application) }
     }
     private val dogsListAdapter = DogListAdapter(arrayListOf())
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,6 +33,7 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // quando for criada, pega do db/remote
+        setHasOptionsMenu(true)
         viewModel.refresh()
 
         rv_dogList.apply {
@@ -76,5 +75,31 @@ class ListFragment : Fragment() {
                 }
             }
         })
+    }
+
+    /*
+    1. criar o fragment (blank)
+    2. extends de PreferenceFragmentCompat()
+    3. apagar o xml do fragment e criar meu proprio na pasta xml
+    4. criar 1 menu
+    5. esses 2 overrides a baixo
+    6. colocar meu fragment no nav_graph
+    7. criar 1 funcao que retorne o valor que tá definido como key na preferences.xml e pegar do sharedprefs *funciona*
+    8. atualiza o valor na funcao checkCacheDuration()
+     */
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.list_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menuActionSettings -> {
+                view?.let {
+                    Navigation.findNavController(it).navigate(ListFragmentDirections.actionToSettings())
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

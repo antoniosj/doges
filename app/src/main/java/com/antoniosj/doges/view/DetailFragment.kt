@@ -3,10 +3,9 @@ package com.antoniosj.doges.view
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,7 +14,10 @@ import androidx.palette.graphics.Palette
 
 import com.antoniosj.doges.R
 import com.antoniosj.doges.databinding.FragmentDetailBinding
+import com.antoniosj.doges.databinding.SendSmsDialogBinding
+import com.antoniosj.doges.model.DogBreed
 import com.antoniosj.doges.model.DogPalette
+import com.antoniosj.doges.model.SmsInfo
 import com.antoniosj.doges.util.getProgressDrawable
 import com.antoniosj.doges.util.loadImage
 import com.antoniosj.doges.util.viewModelFactory
@@ -30,6 +32,8 @@ class DetailFragment : Fragment() {
 
     var dogUuid = 0
     private lateinit var dataBinding: FragmentDetailBinding
+    private var sendSmsStarted = false
+    private var currentDog: DogBreed? = null
 
     private val viewModel: DetailViewModel by viewModels {
         viewModelFactory { DetailViewModel(requireActivity().application) }
@@ -38,6 +42,7 @@ class DetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         dataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false)
 
         // Inflate the layout for this fragment
@@ -57,6 +62,7 @@ class DetailFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.dogBreed.observe(viewLifecycleOwner, Observer { dog ->
+            currentDog = dog
             dog?.let {
 //                tv_dogNameDetail.text = dog.dogBreed
 //                tv_dogLifespanDetail.text = dog.lifeSpan
@@ -93,6 +99,57 @@ class DetailFragment : Fragment() {
             })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.detail_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_send_sms -> {
+                sendSmsStarted = true
+                (activity as MainActivity).checkSmsPermission()
+            }
+            R.id.action_share -> {
+                
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    // PERMISSION cont
+    fun onPermissionResult(permissionGranted: Boolean) {
+        if (sendSmsStarted && permissionGranted)  {
+            context?.let {
+                val smsInfo = SmsInfo("",
+                    "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}",
+                currentDog?.imageUrl)
+
+                val dialogBinding = DataBindingUtil.inflate<SendSmsDialogBinding>(
+                    LayoutInflater.from(it), R.layout.send_sms_dialog, null, false
+                )
+
+                AlertDialog.Builder(it)
+                    .setView(dialogBinding.root)
+                    .setPositiveButton("send SMS") { dialog, which ->
+                        if (!dialogBinding.etSmsDestination.text.isNullOrEmpty()) {
+                            smsInfo.to = dialogBinding.etSmsDestination.text.toString()
+                            sendSms(smsInfo)
+                        }
+                    }
+                    .setNegativeButton("Cancel") { dialog, which ->
+
+                    }
+                    .show()
+
+                dialogBinding.smsInfo = smsInfo
+            }
+        }
+    }
+
+    private fun sendSms(smsInfo: SmsInfo) {
+
+    }
 
 
 }

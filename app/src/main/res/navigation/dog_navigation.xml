@@ -12,6 +12,9 @@
             app:destination="@id/detailFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/actionToSettings"
+            app:destination="@id/actionSettings" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -26,4 +29,8 @@
             app:argType="integer"
             android:defaultValue="0"/>
     </fragment>
+    <fragment
+        android:id="@+id/actionSettings"
+        android:name="com.antoniosj.doges.view.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>
