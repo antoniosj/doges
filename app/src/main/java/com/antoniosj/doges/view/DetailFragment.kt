@@ -1,8 +1,11 @@
 package com.antoniosj.doges.view
 
+import android.app.PendingIntent
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.telephony.SmsManager
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -38,6 +41,7 @@ class DetailFragment : Fragment() {
     private val viewModel: DetailViewModel by viewModels {
         viewModelFactory { DetailViewModel(requireActivity().application) }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -83,7 +87,7 @@ class DetailFragment : Fragment() {
         Glide.with(this)
             .asBitmap()
             .load(url)
-            .into(object: CustomTarget<Bitmap>(){
+            .into(object : CustomTarget<Bitmap>() {
                 override fun onLoadCleared(placeholder: Drawable?) {
                 }
 
@@ -111,7 +115,14 @@ class DetailFragment : Fragment() {
                 (activity as MainActivity).checkSmsPermission()
             }
             R.id.action_share -> {
-                
+                Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_SUBJECT, "check out this dog breed")
+                    putExtra(Intent.EXTRA_TEXT, "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}")
+                    putExtra(Intent.EXTRA_STREAM, currentDog?.imageUrl) // send image via stream
+                    // user choose what app from list of whose can handle itgi
+                    startActivity(Intent.createChooser(this, "Share With"))
+                }
             }
         }
         return super.onOptionsItemSelected(item)
@@ -119,11 +130,13 @@ class DetailFragment : Fragment() {
 
     // PERMISSION cont
     fun onPermissionResult(permissionGranted: Boolean) {
-        if (sendSmsStarted && permissionGranted)  {
+        if (sendSmsStarted && permissionGranted) {
             context?.let {
-                val smsInfo = SmsInfo("",
+                val smsInfo = SmsInfo(
+                    "",
                     "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}",
-                currentDog?.imageUrl)
+                    currentDog?.imageUrl
+                )
 
                 val dialogBinding = DataBindingUtil.inflate<SendSmsDialogBinding>(
                     LayoutInflater.from(it), R.layout.send_sms_dialog, null, false
@@ -148,8 +161,12 @@ class DetailFragment : Fragment() {
     }
 
     private fun sendSms(smsInfo: SmsInfo) {
-
+        val intent = Intent(context, MainActivity::class.java)
+        val pi = PendingIntent.getActivity(context, 0, intent, 0)
+        val sms = SmsManager.getDefault()
+        sms.sendTextMessage(smsInfo.to, null, smsInfo.text, pi, null)
     }
+    // permission end
 
 
 }
